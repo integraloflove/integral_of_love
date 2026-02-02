@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine?</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #ffe6f0;
+    text-align: center;
+    overflow-y: auto; /* Scrollbar on far right */
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1 { margin-bottom: 20px; }
+
+  .buttons {
+    position: relative;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  button {
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  #yes { background-color: #ff4d6d; color: white; margin-right: 10px; }
+  #no { background-color: #cccccc; margin-left: 10px; }
+
+  .final-message {
+    max-width: 700px;
+    font-size: 20px;
+    line-height: 1.6;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 50px;
+  }
+
+  .action-button {
+    background-color: #ff4d6d;
+    color: white;
+    font-size: 18px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    display: block;
+    margin: 15px 0; /* uniform spacing */
+  }
+
+  .equation-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    font-family: "Times New Roman", serif;
+    display: none;
+    text-align: center;
+  }
+
+  .heart, .confetti {
+    position: fixed;
+    bottom: -20px;
+    animation: floatUp linear forwards;
+    opacity: 0.8;
+    pointer-events: none;
+    font-size: 20px;
+  }
+
+  @keyframes floatUp {
+    to { transform: translateY(-110vh); opacity: 0; }
+  }
+
+  #compliment {
+    font-size: 22px;
+    color: #ff4d6d;
+    margin-top: 15px;
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- Initial question with Yes/No buttons -->
+  <h1 id="question">Will you be my valentine, Beau? 💖</h1>
+  <div class="buttons" id="buttons">
+    <button id="yes" onclick="yesClicked()">Yes 💘</button>
+    <button id="no">No 🙅‍♂️</button>
+  </div>
+
+  <!-- Final message content -->
+  <div class="final-message" id="finalMessage">
+    <h1>Yay!!!!! 💕🕺🏼</h1>
+    <p>I love and cherish every second spent with you. You make me laugh until my stomach hurts and smile until my cheeks hurt.</p>
+    <p>With you, the future doesn’t feel like a big question mark — it feels warm and exciting and so easy to imagine because I feel complete with you.</p>
+    <p>You make my life feel fuller, happier, and more me, and I can’t wait for alllllllll the days ahead with you.</p>
+    <p><strong>my forever valentine 💞</strong></p>
+
+    <button class="action-button" onclick="showScreenshotHint()">Screenshot this moment 📸</button>
+    <button class="action-button" onclick="toggleCalc()">Give me a calculus constant equation</button>
+    <div class="equation-box" id="calcEq">
+      <p>
+        Find constants <strong>I, L, Y</strong> such that:<br><br>
+        d/dx ( I x² + L x + Y ) = 2 I x + L
+      </p>
+      <button onclick="showCalcAnswer()">Show answer</button>
+      <p id="calcAnswer"></p>
+    </div>
+
+    <button class="action-button" onclick="toggleLin()">Give me a linear algebra equation</button>
+    <div class="equation-box" id="linEq">
+      <p>
+        Solve for <strong>I, L, Y</strong>:<br><br>
+        ⎡1 0 0⎤<br>
+        ⎢0 1 0⎥ · ⎡I⎤ = ⎡I⎤<br>
+        ⎢0 0 1⎥   ⎢L⎥   ⎢L⎥<br>
+                 ⎣Y⎦   ⎣Y⎦
+      </p>
+      <button onclick="showLinAnswer()">Show answer</button>
+      <p id="linAnswer"></p>
+    </div>
+
+    <button class="action-button" onclick="confettiParty()">Confetti Party 🎉</button>
+    <button class="action-button" onclick="giveCompliment()">Click for a Compliment 💌</button>
+    <p id="compliment"></p>
+  </div>
+
+<script>
+  const noButton = document.getElementById("no");
+
+  // No button chases cursor but stays inside viewport
+  document.addEventListener("mousemove", (e) => {
+    const rect = noButton.getBoundingClientRect();
+    const distance = Math.hypot(
+      e.clientX - (rect.left + rect.width/2),
+      e.clientY - (rect.top + rect.height/2)
+    );
+    if(distance < 100){
+      const maxX = window.innerWidth - noButton.offsetWidth;
+      const maxY = window.innerHeight - noButton.offsetHeight;
+      // Move slightly away from cursor
+      let newLeft = rect.left + (rect.left < e.clientX ? -100 : 100);
+      let newTop = rect.top + (rect.top < e.clientY ? -100 : 100);
+      // Keep inside screen
+      newLeft = Math.min(Math.max(newLeft,0),maxX);
+      newTop = Math.min(Math.max(newTop,0),maxY);
+      noButton.style.left = newLeft + "px";
+      noButton.style.top = newTop + "px";
+      noButton.style.position = "fixed";
+    }
+  });
+
+  function yesClicked(){
+    document.getElementById("question").style.display="none";
+    document.getElementById("buttons").style.display="none";
+    const fm = document.getElementById("finalMessage");
+    fm.style.display="flex";
+    fm.style.flexDirection="column";
+    fm.style.alignItems="center";
+  }
+
+  // Screenshot instructions
+  function showScreenshotHint(){
+    alert(
+      "To capture this moment:\n\n" +
+      "Mac: ⌘ + Shift + 4\n" +
+      "Windows/Other Laptops: Windows + Shift + S\n" +
+      "iPhone: Side + Volume Up"
+    );
+  }
+
+  function toggleCalc(){
+    const eq=document.getElementById("calcEq");
+    eq.style.display=eq.style.display==="block"?"none":"block";
+    if(eq.style.display==="block") eq.scrollIntoView({behavior:"smooth"});
+  }
+
+  function toggleLin(){
+    const eq=document.getElementById("linEq");
+    eq.style.display=eq.style.display==="block"?"none":"block";
+    if(eq.style.display==="block") eq.scrollIntoView({behavior:"smooth"});
+  }
+
+  function showCalcAnswer(){
+    document.getElementById("calcAnswer").innerHTML="<strong>Solution:</strong> I L Y 💖";
+  }
+
+  function showLinAnswer(){
+    document.getElementById("linAnswer").innerHTML="<strong>Solution:</strong> I L Y 💕";
+  }
+
+  // Floating hearts
+  setInterval(()=>{
+    const heart=document.createElement("div");
+    heart.className="heart";
+    heart.innerText="💗";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.animationDuration=(4+Math.random()*4)+"s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),8000);
+  },300);
+
+  // Confetti
+  function confettiParty(){
+    for(let i=0;i<50;i++){
+      const c=document.createElement("div");
+      c.className="confetti";
+      const emojis=["🎉","💖","💗","✨","🌟"];
+      c.innerText=emojis[Math.floor(Math.random()*emojis.length)];
+      c.style.left=Math.random()*100+"vw";
+      c.style.fontSize=(12+Math.random()*24)+"px";
+      c.style.animationDuration=(2+Math.random()*3)+"s";
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),5000);
+    }
+  }
+
+  // Compliments
+  const compliments=[
+    "You make my heart accelerate! 💓",
+    "You have the cutest laugh",
+    "You’re infinitely amazing! ∞",
+    "I love your big hugs (and back scratches)",
+    "You are so smart."
+  ];
+  function giveCompliment(){
+    const c=compliments[Math.floor(Math.random()*compliments.length)];
+    document.getElementById("compliment").innerText=c;
+    document.getElementById("compliment").scrollIntoView({behavior:"smooth"});
+  }
+</script>
+</body>
+</html>
